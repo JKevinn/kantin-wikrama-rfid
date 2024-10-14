@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Students;
 
 class NfcController extends Controller
 {
@@ -12,9 +13,12 @@ class NfcController extends Controller
         $output = shell_exec("python $scriptPath");
     
         if ($output) {
+            $student = Students::where('nis', trim($output))->first();
+
             return response()->json([
                 'status' => 'success',
-                'card_uid' => trim($output)
+                'card_uid' => trim($output),
+                'student' => $student
             ]);
         } else {
             return response()->json([
