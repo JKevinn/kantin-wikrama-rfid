@@ -30,25 +30,16 @@
             <div class="col-12 d-flex align-items-center justify-content-center">
                 <div class="card w-50">
                     <div class="card-body centered-content">
-                        <h4 class="card-title">Absen Pagi</h4>
-                        <form method="POST" action="" class="forms-sample" id="form" enctype="multipart/form-data">
-                            @csrf
-                            <input type="hidden" name="nis" id="nis">
-                            <div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24">
-                                    <path fill="#000000" d="M20 20H4c-1.654 0-3-1.346-3-3V7c0-1.654 1.346-3 3-3h16c1.654 0 3 1.346 3 3v10c0 1.654-1.346 3-3 3M4 6c-.551 0-1 .449-1 1v10c0 .551.449 1 1 1h16c.551 0 1-.449 1-1V7c0-.551-.449-1-1-1zm6 9H6a1 1 0 1 1 0-2h4a1 1 0 1 1 0 2m0-4H6a1 1 0 1 1 0-2h4a1 1 0 1 1 0 2"/>
-                                    <circle cx="16" cy="10.5" r="2" fill="#000000"/>
-                                    <path fill="#000000" d="M16 13.356c-1.562 0-2.5.715-2.5 1.429c0 .357.938.715 2.5.715c1.466 0 2.5-.357 2.5-.715c0-.714-.98-1.429-2.5-1.429"/>
-                                </svg>                                                    
-                                <h5>Pindai Kartu Pelajar</h5>
-                                <h6>Silahkan lakukan pemindaian kartu pelajar pada perangkat</h6>
-                                <p id="cardUidDisplay"></p>
-                            </div>
-                        </form>
-                        <!-- Button to trigger modal -->
-                        <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#attendanceShowModal">
-                            Input NIS
-                        </button>
+                        <h4 class="card-title">Pembayaran Kantin Wikrama</h4>
+                        <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24">
+                            <path fill="#000000" d="M20 20H4c-1.654 0-3-1.346-3-3V7c0-1.654 1.346-3 3-3h16c1.654 0 3 1.346 3 3v10c0 1.654-1.346 3-3 3M4 6c-.551 0-1 .449-1 1v10c0 .551.449 1 1 1h16c.551 0 1-.449 1-1V7c0-.551-.449-1-1-1zm6 9H6a1 1 0 1 1 0-2h4a1 1 0 1 1 0 2m0-4H6a1 1 0 1 1 0-2h4a1 1 0 1 1 0 2"/>
+                            <circle cx="16" cy="10.5" r="2" fill="#000000"/>
+                            <path fill="#000000" d="M16 13.356c-1.562 0-2.5.715-2.5 1.429c0 .357.938.715 2.5.715c1.466 0 2.5-.357 2.5-.715c0-.714-.98-1.429-2.5-1.429"/>
+                        </svg>                                                    
+                        <h5>Pindai Kartu Pelajar</h5>
+                        <h6>Silahkan lakukan pemindaian kartu pelajar pada perangkat</h6>
+                        <p id="cardUidDisplay"></p>
                     </div>
                 </div>
             </div>
@@ -68,6 +59,10 @@
                     <div class="mb-3">
                         <label for="nis-modal" class="form-label">NIS</label>
                         <input type="number" class="form-control" id="nis-modal" name="nis" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Amount</label>
+                        <input type="number" class="form-control" id="amount" name="nis" required>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
