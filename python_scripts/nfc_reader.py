@@ -32,7 +32,7 @@ def read_card_data(start_block, num_blocks, expected_length=8):
         full_data = ""
         for block in range(start_block, start_block + num_blocks):
             AUTHENTICATE = [0xFF, 0x86, 0x00, 0x00, 0x05, 0x01, 0x00, block, 0x60, 0x00]  
-            connection.transmit(AUTHENTICATE + DEFAULT_KAEY)
+            connection.transmit(AUTHENTICATE + DEFAULT_KEY)
 
             READ_BLOCK = [0xFF, 0xB0, 0x00, block, 0x10] 
             data, sw1, sw2 = connection.transmit(READ_BLOCK)
