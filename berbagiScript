@@ -1,0 +1,37 @@
+// NFC Read
+$(document).ready(function () {
+    let intervalId;
+
+        intervalId = setInterval(function() {
+            $.ajax({
+                url: "{{ route('read.nfc') }}", 
+                type: 'GET',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        let card_uid_length = response.card_uid.length;
+                        
+                        if (card_uid_length === 8) {
+                            $('#nis').val(response.card_uid);
+                       
+                            clearInterval(intervalId);
+                            let form = document.getElementById('form');
+                            form.submit()
+                        }
+
+                        else{
+                            $('#cardUidDisplay').text('Card UID: ' + 'Invalid Card UID');
+                        }
+
+                    } else {
+                        $('#cardUidDisplay').text('Error: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                  
+                    console.error(error);
+                }
+            });
+        }, 1000);
+});
+
+});
