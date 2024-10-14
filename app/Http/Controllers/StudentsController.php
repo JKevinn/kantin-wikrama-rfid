@@ -95,5 +95,14 @@ class StudentsController extends Controller
         // Redirect to the students index page with a success message
         return redirect()->route('students.index')->with('success', 'Student deleted successfully.');
     }
+
+    /**
+     * Search for students.
+     */
+    public function search()
+    {
+        // Show a form to search for students
+        return view('students.search');
+    }
 }
 

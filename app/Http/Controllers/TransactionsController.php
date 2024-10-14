@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transactions;
+use App\Models\Students;
 use Illuminate\Http\Request;
 
 class TransactionsController extends Controller
@@ -94,6 +95,27 @@ class TransactionsController extends Controller
 
         // Redirect to the transactions index page with a success message
         return redirect()->route('transactions.index')->with('success', 'Transaction deleted successfully.');
+    }
+
+    /**
+     * Transaction payment.
+     */
+    public function studentPayment(Request $request)
+    {
+        // Show a form to create a new transaction
+        $student = Students::where('nis', $request->nis)->first();
+
+        if ($student) {
+            if($request->pin == $student->pin) {
+                $student->update(['balance' => $student->balance - $request->amount]);
+
+                return redirect()->route('index')->with('success', 'Payment successful.');
+            } else {
+                return redirect()->route('index')->with('error', 'Invalid PIN.');
+            }
+        }
+
+        return redirect()->route('index')->with('error', 'Student not found.');
     }
 }
 
