@@ -54,16 +54,17 @@
                     <h5 class="modal-title" id="exampleModalLabel">Form Input Absen Pagi</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form class="p-3" method="POST" action="" id="form2">
+                <form class="p-3" method="POST" action="" id="form">
                     @csrf
+                    <input type="hidden" class="form-control" id="nis" name="nis" required>
                     <div class="mb-3">
-                        <label for="nis-modal" class="form-label">NIS</label>
-                        <input type="number" class="form-control" id="nis-modal" name="nis" required>
+                        <label for="name" class="form-label">Nama</label>
+                        <input class="form-control" id="name" name="name" required disabled>
                     </div>
                     <div class="mb-3">
                         <label for="amount" class="form-label">Amount</label>
-                        <input type="number" class="form-control" id="amount" name="nis" required>
-                    </div>
+                        <input type="text" class="form-control" id="amount" name="amount" required>
+                    </div>                    
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Submit</button>
@@ -90,6 +91,7 @@
 
                             if (card_uid_length === 8) {
                                 $('#nis').val(response.card_uid);
+                                $('#name').val(response.student.name);
                                 clearInterval(intervalId);
                                 $('#attendanceShowModal').modal('show'); // Show modal when a card UID is read
                             } else {
@@ -104,6 +106,26 @@
                     }
                 });
             }, 1000);
+
+            function formatRupiah(angka, prefix) {
+                var number_string = angka.replace(/[^,\d]/g, '').toString(),
+                    split = number_string.split(','),
+                    sisa = split[0].length % 3,
+                    rupiah = split[0].substr(0, sisa),
+                    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+                
+                if (ribuan) {
+                    separator = sisa ? '.' : '';
+                    rupiah += separator + ribuan.join('.');
+                }
+
+                return prefix === undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
+            }
+
+            $('#amount').on('input', function() {
+                var amount = $(this).val();
+                $(this).val(formatRupiah(amount, 'Rp. '));
+            });
         });
     </script>
 </body>
