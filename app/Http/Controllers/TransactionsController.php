@@ -107,7 +107,12 @@ class TransactionsController extends Controller
 
         if ($student) {
             if($request->pin == $student->pin) {
-                $student->update(['balance' => $student->balance - $request->amount]);
+
+                if($student->balance < $request->amount) {
+                    return redirect()->route('index')->with('error', 'Insufficient balance.');
+                } else{
+                    $student->update(['balance' => $student->balance - $request->amount]);
+                }
 
                 return redirect()->route('index')->with('success', 'Payment successful.');
             } else {
