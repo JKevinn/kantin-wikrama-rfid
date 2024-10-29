@@ -101,26 +101,46 @@ class TransactionsController extends Controller
      * Transaction payment.
      */
     public function studentPayment(Request $request)
-    {
-        // Show a form to create a new transaction
-        $student = Students::where('nis', $request->nis)->first();
+{
+    // Find the student by NIS
+    $student = Students::where('nis', $request->nis)->first();
 
-        if ($student) {
-            if($request->pin == $student->pin) {
-
-                if($student->balance < $request->amount) {
-                    return redirect()->route('index')->with('error', 'Insufficient balance.');
-                } else{
-                    $student->update(['balance' => $student->balance - $request->amount]);
-                }
-
-                return redirect()->route('index')->with('success', 'Payment successful.');
+    if ($student) {
+        // Check if the provided PIN is correct
+        if ($request->pin == $student->pin) {
+            // Check if the student has enough balance
+            if ($student->balance < $request->amount) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Insufficient balance.',
+                    'balance' => 'Rp. ' . $student->balance
+                ]);
             } else {
-                return redirect()->route('index')->with('error', 'Invalid PIN.');
-            }
-        }
+                // Update the balance
+                $student->update(['balance' => $student->balance - $request->amount]);
 
-        return redirect()->route('index')->with('error', 'Student not found.');
+                // Get the updated balance
+                $studentBalance = $student->balance;
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Payment successful.',
+                    'balance' => 'Your Balance Rp. ' . $studentBalance
+                ]);
+            }
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid PIN.'
+            ]);
+        }
     }
+
+    return response()->json([
+        'status' => 'error',
+        'message' => 'Student not found.'
+    ]);
+}
+
 }
 

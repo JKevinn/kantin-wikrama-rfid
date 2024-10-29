@@ -46,15 +46,14 @@
         </div>
     </div>
 
-    {{-- modal --}}
-    <div class="modal fade" id="attendanceShowModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="paymentShowModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Form Input Absen Pagi</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Form Input Pembayaran</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form class="p-3" method="POST" action="" id="form">
+                <form class="p-3" method="POST" action="{{ route('student.payment')}}" id="form">
                     @csrf
                     <input type="hidden" class="form-control" id="nis" name="nis" required>
                     <div class="mb-3">
@@ -64,7 +63,29 @@
                     <div class="mb-3">
                         <label for="amount" class="form-label">Amount</label>
                         <input type="text" class="form-control" id="amount" name="amount" required>
-                    </div>                    
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="showPinModal">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="pinModal" tabindex="-1" aria-labelledby="pinModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pinModalLabel">Enter PIN</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form class="p-3" method="POST" action="{{ route('student.payment')}}" id="pinForm">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="pin" class="form-label">PIN</label>
+                        <input type="password" class="form-control" id="pin" name="pin" required>
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Submit</button>
@@ -74,12 +95,26 @@
         </div>
     </div>
 
+    <div class="modal fade" id="customAlertModal" tabindex="-1" aria-labelledby="customAlertModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="customAlertModalLabel">Notification</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="customAlertMessage"></div>
+            </div>
+        </div>
+    </div>
+    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script>
         $(document).ready(function () {
             let intervalId;
-
+    
             // Start reading NFC card
             intervalId = setInterval(function() {
                 $.ajax({
@@ -88,14 +123,12 @@
                     success: function(response) {
                         if (response.status === 'success') {
                             let card_uid_length = response.card_uid.length;
-
+    
                             if (card_uid_length === 8) {
                                 $('#nis').val(response.card_uid);
                                 $('#name').val(response.student.name);
                                 clearInterval(intervalId);
-                                $('#attendanceShowModal').modal('show'); // Show modal when a card UID is read
-                            } else {
-                                $('#cardUidDisplay').text('Card UID: Invalid Card UID');
+                                $('#paymentShowModal').modal('show'); // Show modal when a card UID is read
                             }
                         } else {
                             $('#cardUidDisplay').text('Error: ' + response.message);
@@ -106,7 +139,7 @@
                     }
                 });
             }, 1000);
-
+    
             function formatRupiah(angka, prefix) {
                 var number_string = angka.replace(/[^,\d]/g, '').toString(),
                     split = number_string.split(','),
@@ -118,15 +151,69 @@
                     separator = sisa ? '.' : '';
                     rupiah += separator + ribuan.join('.');
                 }
-
+    
                 return prefix === undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
             }
-
+    
             $('#amount').on('input', function() {
                 var amount = $(this).val();
                 $(this).val(formatRupiah(amount, 'Rp. '));
             });
+    
+            $('#showPinModal').on('click', function () {
+                $('#paymentShowModal').modal('hide');
+                $('#pinModal').modal('show');
+            });
+    
+            $('#pinForm').on('submit', function (event) {
+                event.preventDefault(); // Prevent default form submission
+    
+                // Collect all data
+                const nis = $('#nis').val();
+                const name = $('#name').val();
+                const amount = $('#amount').val().replace(/[Rp. ]/g, ''); // Remove 'Rp. ' for submission
+                const pin = $('#pin').val();
+    
+                // Submit data
+                $.ajax({
+                    url: "{{ route('student.payment') }}", // Update the URL as needed
+                    method: 'POST',
+                    data: {
+                        nis: nis,
+                        name: name,
+                        amount: amount,
+                        pin: pin,
+                        _token: '{{ csrf_token() }}' // Include CSRF token
+                    },
+                    success: function(response) {
+                        $('#pinModal').modal('hide');
+
+                        let message;
+                        if (response.balance === undefined) {
+                            message = response.message;
+                        } else {
+                            message = response.message + ' ' + response.balance;
+                        }
+
+                        // Set the message in the modal
+                        $('#customAlertMessage').text(message);
+                        
+                        // Show the custom alert modal
+                        $('#customAlertModal').modal('show');
+
+                        // Automatically close the modal after 2 seconds
+                        setTimeout(function() {
+                            $('#customAlertModal').modal('hide');
+                            window.location.reload(); // Refresh the page after closing
+                        }, 2000); // 2000 milliseconds = 2 seconds
+                    },
+
+                    error: function(error) {
+                        // alert('An error occurred. Please try again.');
+                    }
+                });
+            });
         });
-    </script>
+    </script>    
 </body>
 </html>

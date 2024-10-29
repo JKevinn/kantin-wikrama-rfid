@@ -8,7 +8,7 @@ use App\Http\Controllers\NfcController;
 Route::resource('students', StudentsController::class);
 Route::resource('transactions', TransactionsController::class);
 Route::get('/read-nfc', [NfcController::class, 'readCard'])->name('read.nfc');
-Route::get('/student-payment', [TransactionsController::class, 'studentPayment'])->name('student.payment');
+Route::post('/student-payment', [TransactionsController::class, 'studentPayment'])->name('student.payment');
 
 Route::get('/', function () {
     return view('index');
